@@ -1,0 +1,4 @@
+connexion
+gevent
+statsd
+swagger-ui-bundle

@@ -1,0 +1,21 @@
+User:
+    email
+    name
+
+Group:
+    name
+    users []
+    organisation
+
+Role:
+    name
+    groups []
+    organisation
+
+Policy:
+    name
+    organisation
+    actions []
+
+Action:
+    name

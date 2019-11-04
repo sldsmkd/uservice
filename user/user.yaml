@@ -1,0 +1,135 @@
+swagger: '2.0'
+info:
+  title: User API
+  version: "0.1"
+  description: Simple example API to store and retrieve users
+consumes:
+  - application/json
+produces:
+  - application/json
+# security:
+  # enable OAuth protection for all REST endpoints
+  # (only active if the TOKENINFO_URL environment variable is set)
+  # - oauth2: [uid]
+paths:
+  /users:
+    get:
+      tags: [Users]
+      operationId: app.get_users
+      summary: Get all users
+      parameters:
+        - name: email
+          in: query
+          type: string
+          pattern: "^[a-zA-Z0-9]*$"
+        - name: limit
+          in: query
+          type: integer
+          format: int32
+          minimum: 0
+          default: 100
+      responses:
+        200:
+          description: Return users
+          schema:
+            type: object
+            properties:
+              users:
+                type: array
+                items:
+                  $ref: '#/definitions/User'
+  /users/{user_id}:
+    get:
+      tags: [Users]
+      operationId: app.get_user
+      summary: Get a single user
+      parameters:
+        - $ref: '#/parameters/user_id'
+      responses:
+        200:
+          description: Return user
+          schema:
+            $ref: '#/definitions/User'
+        404:
+          description: User does not exist
+    put:
+      tags: [Users]
+      operationId: app.put_user
+      summary: Create or update a user
+      parameters:
+        - $ref: '#/parameters/user_id'
+        - name: user
+          in: body
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        200:
+          description: User updated
+        201:
+          description: New user created
+    delete:
+      tags: [Users]
+      operationId: app.delete_user
+      summary: Remove a user
+      parameters:
+        - $ref: '#/parameters/user_id'
+      responses:
+        204:
+          description: User was deleted
+        404:
+          description: User does not exist
+
+
+parameters:
+  user_id:
+    name: user_id
+    description: User's Unique identifier
+    in: path
+    type: string
+    required: true
+    pattern: "^[a-zA-Z0-9-]+$"
+
+definitions:
+  User:
+    type: object
+    required:
+      - name
+      - email
+    properties:
+      id:
+        type: string
+        description: Unique identifier
+        example: "123"
+        readOnly: true
+      name:
+        type: string
+        description: User's name
+        example: "kris"
+        minLength: 1
+        maxLength: 100
+      email:
+        type: string
+        description: email
+        example: "kris@smkd.net"
+        minLength: 1
+      tags:
+        type: object
+        description: Custom tags
+      created:
+        type: string
+        format: date-time
+        description: Creation time
+        example: "2015-07-07T15:49:51.230+02:00"
+        readOnly: true
+
+
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://example.com/oauth2/dialog
+    # x-tokenInfoFunc: app.token_info
+    scopes:
+      uid: Unique identifier of the user accessing the service.
+
+
