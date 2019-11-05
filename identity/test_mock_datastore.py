@@ -1,5 +1,5 @@
 import pytest
-from identity.mock_datastore import MockDatastore
+from mock_datastore import MockDatastore
 
 
 def test_create_datastore():

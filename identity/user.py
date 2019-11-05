@@ -10,25 +10,23 @@ class User(object):
 
     def create(self, user_id, name, email):
         try:
+            print(self._datastore.list())
             body = {
                 "name": name,
                 "email": email
             }
             self._datastore.create(user_id, body)
-            return 200, "User Created"
+            return "User Created"
         except KeyError:
-            return 409, "Conflict: User Exists"
-        finally:
-            return 500, "Something blew up"
+            return "Conflict: User Exists"
 
     def read(self, user_id):
         try:
+            print(self._datastore.list())
             body = self._datastore.read(user_id)
-            return 200, body
+            return body
         except KeyError:
-            return 404, "Not found"
-        finally:
-            return 500, "Something blew up"
+            return "Not found"
 
     def update(self, user_id, name, email):
         pass
