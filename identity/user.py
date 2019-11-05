@@ -10,7 +10,6 @@ class User(object):
 
     def create(self, user_id, name, email):
         try:
-            print(self._datastore.list())
             body = {
                 "name": name,
                 "email": email
@@ -22,7 +21,6 @@ class User(object):
 
     def read(self, user_id):
         try:
-            print(self._datastore.list())
             body = self._datastore.read(user_id)
             return body
         except KeyError:
