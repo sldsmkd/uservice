@@ -24,6 +24,58 @@ there is some oauth support also, but didn't get it fully working; uncomment lin
 `http PUT http://localhost:8080/users/1 'Authorization: Bearer 123'`
 
 
-the stuff in /identity is rebuilding from scratch, there's some unittests
-/ mocks there.
+after some struggles with the framework, I built a simple microservice from scratch in identity.
+
+this seperates out the routing, application and persistence. the data store is injected in at runtime to allow for simplified testing locally; in real world scenarios something like dynamo would be used.
+
+the app is also instrumented to send some basic stats to statsd for monitoring purposes
+
+to build the docker image
+
+`docker build . -t demo-identity:latest`
+
+to run `docker run demo-identity:latest -p 5000:5000`
+
+testing:
+
+    (venv) kris@sldbook:~/xyz$ http http://localhost:5000/user/1
+    HTTP/1.0 404 NOT FOUND
+    Content-Length: 9
+    Content-Type: text/html; charset=utf-8
+    Date: Tue, 05 Nov 2019 09:48:33 GMT
+    Server: Werkzeug/0.16.0 Python/3.6.8
+
+    Not found
+
+    (venv) kris@sldbook:~/xyz$ http -f POST http://localhost:5000/user/1 name=kris email=kris@smkd.net
+    HTTP/1.0 201 CREATED
+    Content-Length: 12
+    Content-Type: text/html; charset=utf-8
+    Date: Tue, 05 Nov 2019 09:48:38 GMT
+    Server: Werkzeug/0.16.0 Python/3.6.8
+
+    User Created
+
+    (venv) kris@sldbook:~/xyz$ http -f POST http://localhost:5000/user/1 name=kris email=kris@smkd.net
+    HTTP/1.0 409 CONFLICT
+    Content-Length: 21
+    Content-Type: text/html; charset=utf-8
+    Date: Tue, 05 Nov 2019 09:48:45 GMT
+    Server: Werkzeug/0.16.0 Python/3.6.8
+
+    Conflict: User Exists
+
+    (venv) kris@sldbook:~/xyz$ http http://localhost:5000/user/1
+    HTTP/1.0 200 OK
+    Content-Length: 40
+    Content-Type: application/json
+    Date: Tue, 05 Nov 2019 09:48:50 GMT
+    Server: Werkzeug/0.16.0 Python/3.6.8
+
+    {
+        "email": "kris@smkd.net",
+        "name": "kris"
+    }
+
+theres some unit tests impemented for the datastore, they can be run with `pytest`
 

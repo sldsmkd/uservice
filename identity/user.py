@@ -1,13 +1,15 @@
 from mock_datastore import MockDatastore as Datastore
+from statsd import StatsClient
 
 
 class User(object):
-
+    statsd = StatsClient()
     def __init__(self, datastore):
         self._name = None
         self._email = None
         self._datastore = datastore
 
+    @statsd.timer('create_user')
     def create(self, user_id, name, email):
         try:
             body = {
@@ -21,6 +23,7 @@ class User(object):
         except:
             return "Error", 500
 
+    @statsd.timer('read_user')
     def read(self, user_id):
         try:
             body = self._datastore.read(user_id)
