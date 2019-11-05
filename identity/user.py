@@ -15,16 +15,20 @@ class User(object):
                 "email": email
             }
             self._datastore.create(user_id, body)
-            return "User Created"
+            return "User Created", 201
         except KeyError:
-            return "Conflict: User Exists"
+            return "Conflict: User Exists", 409
+        except:
+            return "Error", 500
 
     def read(self, user_id):
         try:
             body = self._datastore.read(user_id)
-            return body
+            return body, 200
         except KeyError:
-            return "Not found"
+            return "Not found", 404
+        except:
+            return "Error", 500
 
     def update(self, user_id, name, email):
         pass
